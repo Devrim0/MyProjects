@@ -1,0 +1,28 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres-db:5433/topics_db # localhost yerine Docker servis adını kullanıyoruz
+    username: devrim
+    password: 1234
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+  kafka:
+    bootstrap-servers: kafka:9092 # localhost yerine Docker'da Kafka servisini kullanıyoruz
+
+logging:
+  level:
+    root: INFO
+    org:
+      springframework:
+        web: DEBUG
+
+hibernate:
+  show_sql: true
+  format_sql: true
+
+server:
+  port: 8080

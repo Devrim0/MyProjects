@@ -1,0 +1,58 @@
+version: '3.8'
+services:
+  mysql-db:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: 1234
+      MYSQL_DATABASE: userdb
+      MYSQL_USER: devrim
+      MYSQL_PASSWORD: 1234
+    ports:
+      - "3306:3306"  # External port changed to avoid conflicts
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - streamify-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "--silent"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  user-service:
+    image: user-service:latest
+    container_name: user-service
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-db:3307/userdb
+      SPRING_DATASOURCE_USERNAME: devrim
+      SPRING_DATASOURCE_PASSWORD: 1234
+    depends_on:
+      - mysql-db
+    networks:
+      - streamify-network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysql-db
+      MYSQL_ROOT_PASSWORD: 1234
+    ports:
+      - "8081:80"
+    depends_on:
+      - mysql-db
+    networks:
+      - streamify-network
+
+volumes:
+  mysql-data:
+
+networks:
+  streamify-network:
+    driver: bridge
